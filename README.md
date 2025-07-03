@@ -36,7 +36,11 @@ Connexa is a modern Django-based social platform for connecting users, sharing p
 
 1. **Clone the repository:**
    ```sh
+<<<<<<< HEAD
    git clone <https://github.com/Connexa-goffart/Django-Connexa-social-platform.git>
+=======
+   git clone  https://github.com/Connexa-goffart/Django-Connexa-social-platform.git
+>>>>>>> 4f4636a3f4c2840d86c5e13f8fb5588a2d90ba6f
    cd Django-social-platform-Connexa
    ```
 
