@@ -1,0 +1,38 @@
+{# activities/event_detail.html #}
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="event-detail-container">
+    <h2>{{ event.title }}</h2>
+    <div class="event-meta">
+        <span class="event-datetime">
+            <strong>Start:</strong> {{ event.start_time|date:'M d, Y H:i' }}<br>
+            <strong>End:</strong> {{ event.end_time|date:'M d, Y H:i' }}
+        </span>
+        <span class="event-creator">
+            <strong>By:</strong> <a href="{% url 'profile' event.creator.id %}">{{ event.creator.username }}</a>
+        </span>
+        {% if event.group %}
+        <span class="event-group">
+            <strong>Group:</strong> <a href="{% url 'group_profile' event.group.id %}">{{ event.group.name }}</a>
+        </span>
+        {% endif %}
+    </div>
+    {% if event.media %}
+    <div class="event-media">
+        <img src="{{ event.media.url }}" alt="Event Media" class="event-media-img">
+    </div>
+    {% endif %}
+    <div class="event-description">
+        <p>{{ event.description|linebreaks }}</p>
+    </div>
+    <div class="event-actions">
+        {% if event.can_edit %}
+            <a href="{% url 'edit_event' event.id %}" class="btn btn-primary">Edit</a>
+        {% endif %}
+        {% if event.can_delete %}
+            <a href="{% url 'delete_event' event.id %}" class="btn btn-danger">Delete</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

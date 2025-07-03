@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div style="display: flex; align-items: flex-start; gap: 24px;">
+    {% if group_profile.profile_image %}
+        <img src="{{ group_profile.profile_image.url }}" alt="Group Profile Image" class="profile-image" style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px; border: 1px solid #ccc;" />
+    {% endif %}
+    <div>
+        <h2>{{ group.name }}</h2>
+        <p><strong>Description:</strong> {{ group_profile.description }}</p>
+        {% if group_profile.creator and group_profile.creator.id %}
+            <p><strong>Creator:</strong> <a href="{% url 'users:profile' group_profile.creator.id %}" class="text-blue-600 underline hover:text-blue-800 font-semibold transition">{{ group_profile.creator.username }}</a></p>
+        {% else %}
+            <p><strong>Creator:</strong> Unknown</p>
+        {% endif %}
+        <h3>Admins</h3>
+        <ul>
+            {% for admin in group_profile.admins.all %}
+                <li><a href="{% url 'users:profile' admin.id %}" class="text-blue-600 underline hover:text-blue-800 font-semibold transition">{{ admin.username }}</a></li>
+            {% endfor %}
+        </ul>
+        <h3>Members ({{ members|length }})</h3>
+        <ul>
+            {% for user in members %}
+                <li><a href="{% url 'users:profile' user.id %}" class="text-blue-600 underline hover:text-blue-800 font-semibold transition">{{ user.username }}</a></li>
+            {% endfor %}
+        </ul>
+        {% if request.user not in group_profile.admins.all %}
+            {% if request.user in members %}
+                <form action="{% url 'users:leave_group' group.id %}" method="post" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">Leave Group</button>
+                </form>
+            {% else %}
+                <form action="{% url 'users:join_group' group.id %}" method="post" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Join Group</button>
+                </form>
+            {% endif %}
+        {% endif %}
+        {% if request.user in group_profile.admins.all %}
+            <div class="my-4">
+                <a href="{% url 'users:edit_group' group.id %}" class="inline-flex items-center gap-2 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition shadow">
+                    <span class="material-icons">settings</span> Group Settings
+                </a>
+                <a href="{% url 'users:group_admin' group.id %}" class="ml-2 bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition">Admin Panel</a>
+            </div>
+        {% endif %}
+        <a href="{% url 'users:group_chat' group.id %}" style="margin-left: 16px;">Open Group Chat</a>
+    </div>
+</div>
+<hr>
+<div style="margin-top: 32px;">
+    <h3>Group Posts ({{ group_posts|length }})</h3>
+    {% if request.user in members %}
+        <a href="{% url 'activities:create_post' %}?group_id={{ group.id }}" class="btn btn-primary">Create Post</a>
+    {% endif %}
+    {% if group_posts %}
+        <ul style="list-style:none;padding:0;">
+            {% for post in group_posts %}
+                <li style="margin-bottom: 24px; padding: 16px; border: 1px solid #eee; border-radius: 8px; background: #fafafa;">
+                    <div style="font-weight:bold; font-size:1.05em;"><a href="{% url 'users:profile' post.author.id %}" class="text-blue-700 hover:underline font-semibold">{{ post.author.username }}</a></div>
+                    <div>{{ post.content }}</div>
+                    {% if post.image %}
+                        <img src="{{ post.image.url }}" alt="Post Image" class="rounded mb-2" style="max-width:220px; max-height:180px;">
+                    {% endif %}
+                    {% if post.video %}
+                        <video controls class="rounded mb-2" style="max-width:220px; max-height:180px;">
+                            <source src="{{ post.video.url }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    {% endif %}
+                    <div style="color:#888;font-size:0.95em;">By <a href="{% url 'users:profile' post.author.id %}">{{ post.author.username }}</a> on {{ post.created_at|timesince }} ago</div>
+                    {% if request.user in group_profile.admins.all or request.user == post.author %}
+                        <a href="{% url 'activities:edit_post' post.id %}">Edit</a>
+                        <a href="{% url 'activities:delete_post' post.id %}">Delete</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div>No posts in this group yet.</div>
+    {% endif %}
+</div>
+<hr>
+<div style="margin-top: 32px;">
+    <h3>Group Events ({{ group_events|length }})</h3>
+    {% if request.user in members %}
+        <a href="{% url 'activities:create_event' %}?group_id={{ group.id }}" class="btn btn-primary">Create Event</a>
+    {% endif %}
+    {% if group_events %}
+        <ul style="list-style:none;padding:0;">
+            {% for event in group_events %}
+                <li style="margin-bottom: 24px; padding: 16px; border: 1px solid #eee; border-radius: 8px; background: #fafafa;">
+                    <div style="font-weight:bold; font-size:1.05em;"><a href="{% url 'users:profile' event.creator.id %}">{{ event.creator.username }}</a></div>
+                    <div>{{ event.title }}</div>
+                    <div>{{ event.description }}</div>
+                    <div>{{ event.date }}</div>
+                    <div>{{ event.location }}</div>
+                    <div style="color:#888;font-size:0.95em;">By <a href="{% url 'users:profile' event.creator.id %}">{{ event.creator.username }}</a></div>
+                    <div>Attendees:
+                        {% for attendee in event.attendees.all %}
+                            <a href="{% url 'users:profile' attendee.id %}" title="{{ attendee.username }}">{{ attendee.username }}</a>{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% if request.user in group_profile.admins.all or request.user == event.creator %}
+                        <a href="{% url 'activities:edit_event' event.id %}">Edit</a>
+                        <a href="{% url 'activities:delete_event' event.id %}">Delete</a>
+                    {% endif %}
+                    {% if request.user not in event.attendees.all %}
+                        <form action="{% url 'activities:attend_event' event.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition">Attend</button>
+                        </form>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div>No events in this group yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

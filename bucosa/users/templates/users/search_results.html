@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2>Search Users</h2>
+<form method="get" action="" class="mb-4 flex gap-2 items-center">
+    <input type="text" name="q" placeholder="Search by username" value="{{ query }}" class="px-3 py-2 border rounded">
+    <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition">Search</button>
+</form>
+
+{% if users %}
+    <ul>
+    {% for user in users %}
+        <li>
+            {% if user.profile.profile_image %}
+                <img src="{{ user.profile.profile_image.url }}" alt="{{ user.username }}'s Profile" class="profile-image">
+            {% else %}
+                <img src="{% static 'static/img/default.png' %}" alt="Default Profile Image" class="profile-image">
+            {% endif %}
+            <a href="{% url 'users:profile' user.id %}" class="text-blue-600 underline hover:text-blue-800 font-semibold transition">{{ user.username }}</a>
+            <p>{{ user.profile.bio }}</p>
+        </li>
+    {% endfor %}
+    </ul>
+{% elif query %}
+    <p>No users found.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-gray-900 via-sky-950 to-indigo-900">
+  <!-- Left: Hero -->
+  <div class="hidden md:flex flex-col justify-center items-center flex-1 px-10 py-20">
+    <span class="material-icons text-sky-400 text-[7rem] mb-8 drop-shadow-xl">login</span>
+    <h1 class="text-5xl font-extrabold text-white mb-6 tracking-tight leading-tight drop-shadow-xl">Welcome Back</h1>
+    <h2 class="text-2xl font-bold text-sky-300 mb-2 drop-shadow">Sign in to Bucosa</h2>
+  </div>
+  <!-- Right: Login Card -->
+  <div class="flex flex-col justify-center items-center flex-1 px-4 py-20">
+    <div class="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl p-10 max-w-md w-full flex flex-col items-center border-2 border-sky-200">
+      <h2 class="text-3xl font-extrabold mb-6 text-gray-900 tracking-tight text-center">Log in</h2>
+      <form action="" method="post" class="mb-4 w-full flex flex-col gap-4">
+        {% csrf_token %}
+        <div class="flex flex-col gap-1">
+          <label for="id_username" class="font-semibold text-gray-700">Username</label>
+          <input type="text" name="username" id="id_username" placeholder="Enter Username" required class="px-3 py-2 border rounded w-full focus:ring-2 focus:ring-sky-400">
+        </div>
+        <div class="flex flex-col gap-1">
+          <label for="id_password" class="font-semibold text-gray-700">Password</label>
+          <input type="password" name="password" id="id_password" placeholder="Enter Password" required class="px-3 py-2 border rounded w-full focus:ring-2 focus:ring-sky-400">
+        </div>
+        <input type="submit" value="Login" class="w-full bg-sky-500 text-white px-4 py-3 rounded-full font-bold text-lg shadow hover:bg-sky-600 transition cursor-pointer mt-2">
+      </form>
+      {% if messages %}
+        <ul class="messages w-full mb-2">
+          {% for message in messages %}
+          <li class="text-red-500">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      <div class="mt-4 text-center">
+        <span class="text-gray-600">No account yet?</span>
+        <a href="{% url 'users:register' %}" class="text-sky-600 underline hover:text-sky-800 font-semibold transition ml-1">Register</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Tailwind CSS CDN (no dark mode config) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-100 min-h-screen transition-colors duration-300">
+    <nav class="bg-white shadow mb-6 transition-colors duration-300">
+        <div class="container mx-auto px-4 py-3 flex justify-center items-center">
+            <span class="text-sky-500 font-semibold text-xl">See what's happening in your network</span>
+        </div>
+    </nav>
+    <main class="container mx-auto px-4">
+        <div class="rounded-xl p-6 transition-colors duration-300 shadow">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
